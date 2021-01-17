@@ -199,6 +199,7 @@ const LoginContainer = ({navigation}) => {
       },
       body: formBody,
     };
+    console.log(`API URL : ${API_URL}`);
     fetch(`${API_URL}/api/login`, options)
       .then((res) => res.json())
       .then((json) => {

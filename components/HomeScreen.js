@@ -62,6 +62,7 @@ const DataBarang = ({navigation, route}) => {
 
   useEffect(() => {
     if (token) {
+      console.log(`API URL : ${API_URL}`);
       let url = new URL(`${API_URL}/api/barang_per_kategori_api`);
       let params = {};
       const options = {
