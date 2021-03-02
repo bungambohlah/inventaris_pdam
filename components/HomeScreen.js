@@ -8,9 +8,11 @@ import {
   SectionList,
   StyleSheet,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Toolbar, Divider, Subheader} from 'react-native-material-ui';
+import Modal from 'react-native-modal';
 import {getUserData, onSignOut} from '../app/auth';
 import {API_URL} from '@env';
 
@@ -51,6 +53,41 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    margin: 20,
+    borderRadius: 20,
+    padding: 35,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    // marginTop: 22,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 });
 
 const DataBarang = ({navigation, route}) => {
@@ -58,6 +95,10 @@ const DataBarang = ({navigation, route}) => {
   const [data, setData] = useState([]);
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [dialog, setDialog] = useState({
+    show: false,
+    data: {},
+  });
   const searchData = useContext(SearchContext);
 
   useEffect(() => {
@@ -131,8 +172,43 @@ const DataBarang = ({navigation, route}) => {
     );
   };
 
+  const toggleModal = (item = {}) => {
+    setDialog({show: !dialog.show, data: item});
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <Modal isVisible={dialog && dialog.show === true ? dialog.show : false}>
+        <View style={styles.centeredView}>
+          {dialog &&
+          dialog.data.constructor === Object &&
+          Object.keys(dialog.data).length ? (
+            <>
+              <Text style={styles.modalText}>
+                Kode Barang : {dialog.data.id_barang}
+              </Text>
+              <Text style={styles.modalText}>
+                Nama Barang : {dialog.data.nama_barang}
+              </Text>
+              <Text style={styles.modalText}>Harga : {dialog.data.harga}</Text>
+              <Text style={styles.modalText}>
+                Jumlah Baik : {dialog.data.jumlah}
+              </Text>
+              <Text style={styles.modalText}>
+                Spesifikasi : {dialog.data.spesifikasi}
+              </Text>
+              {/* <Text>
+                {dialog && dialog.data ? JSON.stringify(dialog.data) : null}
+              </Text> */}
+            </>
+          ) : null}
+          <Pressable
+            style={[styles.button, styles.buttonClose]}
+            onPress={() => toggleModal({})}>
+            <Text style={styles.textStyle}>Tutup</Text>
+          </Pressable>
+        </View>
+      </Modal>
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -163,7 +239,7 @@ const DataBarang = ({navigation, route}) => {
                 <Text
                   style={styles.sectionListItemStyle}
                   //Item Separator View
-                  onPress={() => {}}>
+                  onPress={() => toggleModal(item)}>
                   {item.nama_barang}
                 </Text>
               )}
